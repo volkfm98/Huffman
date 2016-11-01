@@ -31,7 +31,7 @@ bool outputTree = false;
 
 void usage(char* name) {
 	printf("Usage:\n"
-		"%s <x|p> [-v|--verbose] [-i <input file>] [-o <output file>]\n"
+		"%s <x|p> [-v|--verbose] [-t|--tree] [-i <input file>] [-o <output file>]\n"
 		"First argument without a leading dash must be x (extract) or p (pack)\n", 
 		name);
 	exit(0);
