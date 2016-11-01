@@ -29,7 +29,7 @@ size_t eprintf(const char* fmt, ...) {
 
 void usage(char* name) {
 	printf("Usage:\n"
-		"%s <x|p> [-v|--verbose] [input file] [-o <output file>]\n"
+		"%s <x|p> [-v|--verbose] [-i <input file>] [-o <output file>]\n"
 		"First argument without a leading dash must be x (extract) or p (pack)\n", 
 		name);
 	exit(0);
@@ -37,9 +37,6 @@ void usage(char* name) {
 
 int main(int argc, char** argv) {
 	char* name = argv[0];
-	if (argc < 2 || argc > 5) {
-		usage(name);
-	}
 
 	char action = 'n';
 	std::string inputFilename;
@@ -54,15 +51,14 @@ int main(int argc, char** argv) {
 		} else if (arg == "-o") {
 			outputFilename = argv[1];
 			argc--; argv++;
+		} else if (arg == "-i") {
+			inputFilename = argv[1];
+			argc--; argv++;
 		} else {
-			if (action == 'n' && arg != "x" && arg != "e") {
+			if (action == 'n' && arg != "x" && arg != "p") {
 				usage(name);
-			} else if (action == 'n' && (arg == "x" || arg == "e")) {
+			} else if (action == 'n' && (arg == "x" || arg == "p")) {
 				action = arg[0];
-			} else if (action != 'n') {
-				if (inputFilename.empty()) {
-					inputFilename = arg;
-				}
 			}
 		}
 		argc--; argv++;
