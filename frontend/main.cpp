@@ -27,6 +27,8 @@ size_t eprintf(const char* fmt, ...) {
 	}
 }
 
+bool outputTree = false;
+
 void usage(char* name) {
 	printf("Usage:\n"
 		"%s <x|p> [-v|--verbose] [-i <input file>] [-o <output file>]\n"
@@ -48,12 +50,14 @@ int main(int argc, char** argv) {
 		eprintf("Got commandline arg '%s'\n", argv[0]);
 		if (arg == "-v" || arg == "--verbose") {
 			verbose = true;
-		} else if (arg == "-o") {
+		} else if (arg == "-o" || arg == "--output") {
 			outputFilename = argv[1];
 			argc--; argv++;
-		} else if (arg == "-i") {
+		} else if (arg == "-i" || arg == "--input") {
 			inputFilename = argv[1];
 			argc--; argv++;
+		} else if (arg == "-t" || arg == "--tree") {
+			outputTree = true;
 		} else {
 			if (action == 'n' && arg != "x" && arg != "p") {
 				usage(name);

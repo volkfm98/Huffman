@@ -4,6 +4,7 @@
 #include "HuffmanArchive.h"
  
 extern size_t eprintf(const char* format, ...);
+extern bool outputTree;
  
 struct BinatyBuffer {
 	unsigned char ptr, buffer;
@@ -90,7 +91,7 @@ static int writeBit(FILE* output, unsigned char bit) {
 		}
 	}
 
-		++binBuff.ptr;
+	++binBuff.ptr;
  	
 	if (binBuff.ptr > 7) {
 		fwrite(&binBuff.buffer, 1, 1, output);
@@ -162,12 +163,23 @@ static int writeMetadata(FILE* output) {
  
 int archive(FILE* input, FILE* output) {
 	buildHuffmanTree(input);
+
+	if (outputTree) {
+		FILE* dn = fopen("/dev/null", "wb");
+		for (int c = 0; c <= 255; c++) {
+			writeCode(dn, c);
+			printf("Length of code for symbol '%d': %d bits\n", c, bitsWritten);
+			bitsWritten = 0;
+		}
+		fclose(dn);
+	}
 	
 	binBuff.buffer = 0;
 	binBuff.ptr = 0;
 
 	writeMetadata(output);
 	eprintf("Metadata bits: %d\n", bitsWritten);
+	bitsWritten = 0;
  
 	unsigned char buff;
 		
@@ -175,9 +187,11 @@ int archive(FILE* input, FILE* output) {
 		writeCode(output, buff);
 	}
 	eprintf("Code bits: %d\n", bitsWritten);
+	bitsWritten = 0;
 
 	if (binBuff.ptr != 0) {
 		writeLastBuffer(output);
 	}
 	eprintf("Last bits: %d\n", bitsWritten);
+	bitsWritten = 0;
 }
