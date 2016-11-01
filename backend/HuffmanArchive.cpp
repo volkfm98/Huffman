@@ -31,6 +31,8 @@ static HuffmanTree hufTree;
 static BinatyBuffer binBuff;
 
 static unsigned long long symbolCnt = 0;
+
+static unsigned long long bitsWritten = 0;
  
 static int buildStats(FILE* input) {
 	unsigned char buff;
@@ -95,6 +97,7 @@ static int writeBit(FILE* output, unsigned char bit) {
 
 		binBuff.ptr = 0;
 	}
+	bitsWritten++;
  
 	return 1;
 }
@@ -164,14 +167,17 @@ int archive(FILE* input, FILE* output) {
 	binBuff.ptr = 0;
 
 	writeMetadata(output);
+	eprintf("Metadata bits: %d\n", bitsWritten);
  
 	unsigned char buff;
 		
 	while (fread(&buff, 1, 1, input)) {
 		writeCode(output, buff);
 	}
+	eprintf("Code bits: %d\n", bitsWritten);
 
 	if (binBuff.ptr != 0) {
 		writeLastBuffer(output);
 	}
+	eprintf("Last bits: %d\n", bitsWritten);
 }
