@@ -3,17 +3,20 @@
 #include <string>
 #include <stdarg.h>
 
-int test_deflate(FILE* input, FILE* output) {
+#include <HuffmanArchive.h>
+#include <HuffmanDearchive.h>
+
+/*int test_deflate(FILE* input, FILE* output) {
 	printf("deflate\n");
 	return 0;
 }
 int test_inflate(FILE* input, FILE* output) {
 	printf("inflate\n");
 	return 0;
-}
+}*/
 
-#define BACKEND_DEFLATE test_deflate
-#define BACKEND_INFLATE test_inflate
+#define BACKEND_DEFLATE archive
+#define BACKEND_INFLATE dearchive
 
 bool verbose = false;
 size_t eprintf(const char* fmt, ...) {
@@ -27,7 +30,7 @@ size_t eprintf(const char* fmt, ...) {
 void usage(char* name) {
 	printf("Usage:\n"
 		"%s <x|p> [-v|--verbose] [input file] [-o <output file>]\n"
-		"First argument without a leading dash must be x (extract) or p (pack)", 
+		"First argument without a leading dash must be x (extract) or p (pack)\n", 
 		name);
 	exit(0);
 }
