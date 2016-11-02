@@ -3,20 +3,19 @@
 #include <string>
 #include <stdarg.h>
 
-#include <HuffmanArchive.h>
-#include <HuffmanDearchive.h>
+#include "engines.h"
 
-/*int test_deflate(FILE* input, FILE* output) {
+int test_deflate(FILE* input, FILE* output) {
 	printf("deflate\n");
 	return 0;
 }
 int test_inflate(FILE* input, FILE* output) {
 	printf("inflate\n");
 	return 0;
-}*/
+}
 
-#define BACKEND_DEFLATE archive
-#define BACKEND_INFLATE dearchive
+#define BACKEND_DEFLATE test_deflate
+#define BACKEND_INFLATE test_inflate
 
 bool verbose = false;
 size_t eprintf(const char* fmt, ...) {
