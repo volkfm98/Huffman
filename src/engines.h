@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engines/huffman-old/HuffmanArchive.h"
-#include "engines/huffman-old/HuffmanDearchive.h"
+#include "../engines/huffman-old/HuffmanArchive.h"
+#include "../engines/huffman-old/HuffmanDearchive.h"
 
 #include <unordered_map>
 #include <functional>
