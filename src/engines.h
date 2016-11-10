@@ -3,6 +3,8 @@
 #include "../engines/huffman-old/HuffmanArchive.h"
 #include "../engines/huffman-old/HuffmanDearchive.h"
 
+#include "../engines/huffman-2/export.h"
+
 #include <unordered_map>
 #include <functional>
 #include <string>
@@ -29,6 +31,13 @@ std::unordered_map <
 		{
 			HuffmanOldArchive::archive,
 			HuffmanOldDearchive::dearchive
+		}
+	},
+	{
+		"huffman-2",
+		{
+			Huffman2::deflate,
+			Huffman2::inflate
 		}
 	}
 };

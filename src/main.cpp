@@ -1,30 +1,9 @@
 #include <initializer_list>
 #include <cstdio>
 #include <string>
-#include <stdarg.h>
 
+#include <util.h>
 #include "engines.h"
-
-int test_deflate(FILE* input, FILE* output) {
-	printf("deflate\n");
-	return 0;
-}
-int test_inflate(FILE* input, FILE* output) {
-	printf("inflate\n");
-	return 0;
-}
-
-#define BACKEND_DEFLATE test_deflate
-#define BACKEND_INFLATE test_inflate
-
-bool verbose = false;
-size_t eprintf(const char* fmt, ...) {
-	if (verbose) {
-		va_list vp;
-		va_start(vp, fmt);
-		vprintf(fmt, vp);
-	}
-}
 
 bool outputTree = false;
 

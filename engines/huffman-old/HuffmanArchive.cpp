@@ -4,7 +4,7 @@
 
 #include "HuffmanArchive.h"
  
-extern size_t eprintf(const char* format, ...);
+extern int eprintf(const char* format, ...);
 extern bool outputTree;
  
 namespace HuffmanOldArchive {
