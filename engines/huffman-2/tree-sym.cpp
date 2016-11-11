@@ -20,8 +20,8 @@ namespace Huffman2 {
 		}
 	}
 
-	void Tree::writeSymbolToStream(uint8_t sym, FILE* fd) {
-		std::vector <bool> bits = symbolMap[sym];
+	void Tree::writeSymbolToStream(const uint8_t &sym, FILE* fd) {
+		const std::vector <bool> &bits = symbolMap[sym];
 		for (int i = 0; i < bits.size(); i++) {
 			if (bits[i]) {
 				writeBit(fd, 1);

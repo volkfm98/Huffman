@@ -1,6 +1,7 @@
 #include "tree.h"
 
 #include <initializer_list>
+#include <util.h>
 
 namespace Huffman2 {
 
@@ -22,9 +23,12 @@ namespace Huffman2 {
 		sTree.push_back(SerializedNode());
 		serializeNode(root, 0);
 		size_t sts = sTree.size();
-		fflush(fd);
 		fwrite(&sts, sizeof(size_t), 1, fd);
-		fflush(fd);
+		eprintf("Written %u*%u=%u bytes on meta tree (+%u for size info)\n",
+				sts,
+				sizeof(SerializedNode),
+				sts*sizeof(SerializedNode),
+				sizeof(sts));
 		fwrite(&sTree[0], sizeof(SerializedNode), sTree.size(), fd);
 	}
 };

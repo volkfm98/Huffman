@@ -39,7 +39,7 @@ namespace Huffman2 {
 
 		std::unordered_map <char, std::vector<bool> > symbolMap;
 		void buildSymbolMap(Tree::Node *n, const std::vector<bool> &bits);
-		void writeSymbolToStream(uint8_t sym, FILE* fd);
+		void writeSymbolToStream(const uint8_t &sym, FILE* fd);
 		uint8_t readSymbolFromStream(FILE* fd);
 	};
 };

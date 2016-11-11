@@ -24,9 +24,6 @@ namespace Huffman2 {
 		size_t len;
 		fread(&len, sizeof(len), 1, fd);
 		fread(sTree, sizeof(SerializedNode), len, fd);
-		for (int i = 0; i < len; i++) {
-			printf("%d %d %d\n", sTree[i].left, sTree[i].right, sTree[i].data);
-		}
 		root = new Node();
 		deserializeNode(root, 0);
 	}

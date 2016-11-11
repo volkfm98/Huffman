@@ -2,25 +2,27 @@
 #include "stats.h"
 
 namespace Huffman2 {
+	const size_t bufSize = 1024;
+
 	/**
 	 * Writes the bit using bufferized output.
 	 * Caches 8 bits, then writes
 	 */
-	uint8_t wBuff = 0;
-	uint8_t wPtr = 0;
+	uint8_t wBitBuff = 0;
+	uint8_t wBitPtr = 0;
 	void writeBit(FILE* fd, uint8_t bit) {
-		uint8_t mask = (bit << wPtr);
-		wBuff |= mask;
-		wPtr++;
-		if (wPtr >= 8) {
-			fwrite(&wBuff, 1, 1, fd);
-			wBuff = 0;
-			wPtr = 0;
+		uint8_t mask = (bit << wBitPtr);
+		wBitBuff |= mask;
+		wBitPtr++;
+		if (wBitPtr >= 8) {
+			fwrite(&wBitBuff, 1, 1, fd);
+			wBitBuff = 0;
+			wBitPtr = 0;
 		}
 		stats.bitsWritten++;
 	}
 	void finalizeWrite(FILE* fd) {
-		while (wPtr) writeBit(fd, 0);
+		while (wBitPtr) writeBit(fd, 0);
 	}
 
 	uint8_t rBuff = 0;
