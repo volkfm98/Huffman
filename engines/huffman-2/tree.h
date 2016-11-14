@@ -37,7 +37,8 @@ namespace Huffman2 {
 		void serializeIntoStream(FILE* fd);
 		void deserializeFromStream(FILE* fd);
 
-		std::unordered_map <char, std::vector<bool> > symbolMap;
+		//std::unordered_map <char, std::vector<bool> > symbolMap;
+		std::vector <bool> symbolMap[256];
 		void buildSymbolMap(Tree::Node *n, const std::vector<bool> &bits);
 		void writeSymbolToStream(const uint8_t &sym, FILE* fd);
 		uint8_t readSymbolFromStream(FILE* fd);
