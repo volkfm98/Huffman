@@ -1,10 +1,16 @@
 #include <cstdio>
 #include <algorithm>
+
+#include <vector>
+#include <queue>
 #include <unordered_map>
 
 #include "HuffmanArchive.h"
+#include "HuffmanDearchive.h"
+
+using std::priority_queue;
  
-extern int eprintf(const char* format, ...);
+extern size_t eprintf(const char* format, ...);
 extern bool outputTree;
  
 namespace HuffmanOldArchive {
@@ -12,76 +18,126 @@ namespace HuffmanOldArchive {
 		unsigned char ptr, buffer;
 	};
 	 
-	struct Symbol {
+	struct Node {
+		Node *l, *r, *parent;
 		unsigned long long weight;
 		unsigned char sym;
 	};
-	 
-	bool symbolCmp(Symbol a, Symbol b) {
-		return a.weight < b.weight;
-	}
-	 
-	struct HuffmanTree {
-		unsigned int tree[511][3];
-		unsigned long long weight[511];
+
+	struct NodeCmpStruct {
+		bool operator()(Node*& a, Node*& b) {
+			return (*a).weight > (*b).weight;
+		}
 	};
 	 
-	static unsigned long long symbolToWeight[256];
-	static Symbol stats[256];
-	 
+	struct HuffmanTree {
+		Node tree[511];
+	};
+
+	struct Code {
+		unsigned char length;
+		unsigned char chunks[32];
+	};
+ 
+	static std::priority_queue <Node*, std::vector<Node*>, NodeCmpStruct> que;
 	static HuffmanTree hufTree;
+
+	static Code codeTable[256];
 
 	static BinatyBuffer binBuff;
 
+	static unsigned int metadataSize = 256 * 8;
 	static unsigned long long symbolCnt = 0;
-
 	static unsigned long long bitsWritten = 0;
 	 
 	static int buildStats(FILE* input) {
 		unsigned char buff;
 	 
 		for (int i = 0; i < 256; ++i) {
-			stats[i].sym = i;
-			stats[i].weight = 0;
+			hufTree.tree[i].sym = i;
+			hufTree.tree[i].weight = 0;
+			hufTree.tree[i].l = NULL;
+			hufTree.tree[i].r = NULL;
+			hufTree.tree[i].parent = NULL;
 		}
 
 		while (fread(&buff, 1, 1, input)) {
-			++stats[buff].weight;
+			++hufTree.tree[buff].weight;
 		}
-	 
+
 		for (int i = 0; i < 256; ++i) {
-			symbolToWeight[i] = stats[i].weight;
-			symbolCnt += stats[i].weight;
+			if (hufTree.tree[i].weight != 0) {
+				que.push(&hufTree.tree[i]);
+			}
+
+			symbolCnt += hufTree.tree[i].weight;
 		}
 	 
-		std::sort(stats, stats + 256, symbolCmp);
-	 
+		eprintf("Stats has been built\n");
+
 		return 0;
 	}
 	 
 	static int buildHuffmanTree(FILE* input) {
 		buildStats(input);
-	 
-		hufTree.tree[0][0] = 0;
-		hufTree.tree[0][1] = 0;
-		hufTree.tree[0][2] = (unsigned char)stats[0].sym;
-		hufTree.weight[0] = stats[0].weight;
-	 
-		for (int i = 1; i < 511; i += 2) {
-			hufTree.tree[i][0] = 0;
-			hufTree.tree[i][1] = 0;
-			hufTree.tree[i][2] = (unsigned char)stats[i / 2 + 1].sym;
+		
+		Node *firstMin, *secondMin;
+		unsigned int ptr = 256;
 
-			hufTree.weight[i] = stats[i / 2 + 1].weight;
-	 
-			hufTree.tree[i + 1][0] = i - 1;
-			hufTree.tree[i + 1][1] = i;
-			hufTree.weight[i + 1] = hufTree.weight[i - 1] + hufTree.weight[i];
+		while (que.size() > 1) {
+			firstMin = que.top();
+			que.pop();
+			secondMin = que.top();
+			que.pop();
+
+			hufTree.tree[ptr].l = firstMin;
+			hufTree.tree[ptr].r = secondMin;
+			hufTree.tree[ptr].parent = NULL;
+			hufTree.tree[ptr].weight = (*firstMin).weight + (*secondMin).weight;
+
+			(*firstMin).parent = &(hufTree.tree[ptr]);
+			(*secondMin).parent = &(hufTree.tree[ptr]);
+
+			que.push(&(hufTree.tree[ptr]));
+
+			++ptr;
 		}
 
 		fseek(input, 0, SEEK_SET);
+
+		eprintf("Tree has been built\n");
 	}
-	 
+	
+	static int buildCodeTable() {
+		Node* curRoot;
+		unsigned char mask;
+
+		for (unsigned int i = 0; i < 256; ++i) {
+			curRoot = &hufTree.tree[i];
+			mask = (unsigned char)(1 << 7);
+
+			while ((*curRoot).parent != NULL) {
+				if (curRoot == (*(*curRoot).parent).r) {
+					codeTable[i].chunks[codeTable[i].length / 8] = (unsigned char)((unsigned char)codeTable[i].chunks[codeTable[i].length / 8] | mask);
+				}
+
+				++codeTable[i].length;
+			
+				curRoot = (*curRoot).parent;
+
+				mask >>= 1;
+
+				if (mask == 0) {
+					mask = (unsigned char)(1 << 7);
+				}
+			}
+
+			metadataSize += codeTable[i].length;
+		}
+
+		eprintf("Table has been built\n");
+	}
+
 	static int writeBit(FILE* output, unsigned char bit) {
 		if ((unsigned char)((unsigned char)(binBuff.buffer << binBuff.ptr) >> 7) != bit) {
 			unsigned char mask = (unsigned char)((unsigned char)((unsigned char)1 << 7) >> binBuff.ptr);
@@ -111,49 +167,19 @@ namespace HuffmanOldArchive {
 		}
 	}
 
-	static int writeSym(FILE* output, unsigned char c) {
-		for (unsigned char i = 0; i < 8; ++i) {
-			writeBit(output, (i >> (7 - i)) << 7);
-		}
-	}
-
 	static int writeCodeLength(FILE* output, unsigned char c) {
-		unsigned char length = 0;
-
-		for (unsigned int i = 0; i < 256; ++i) {
-			if (stats[i].sym == c) {
-				length = (unsigned char)(256 - i);
-
-				if (i == 0) {
-					length = 255;
-				}
-
-				for (unsigned int j = 0; j < 8; ++j) {
-					writeBit(output, (unsigned char)(((unsigned char)(length << j)) >> 7));
-				}
-			}
+		for (int i = 0; i < 8; ++i) {
+			writeBit(output, (unsigned char)((unsigned char)(codeTable[c].length << i) >> 7));
 		}
 	}
 
 	static int writeCode(FILE* output, unsigned char c) {
-		unsigned int curNode = 510;
-		unsigned char leaf = 1;
-		
-		while (!(hufTree.tree[curNode][0] == 0 && hufTree.tree[curNode][1] == 0)) {
-			if ((unsigned char)hufTree.tree[hufTree.tree[curNode][leaf]][2] == c) {
-				curNode = hufTree.tree[curNode][leaf];
-				
-				writeBit(output, leaf);
-			} else {
-				curNode = hufTree.tree[curNode][1 - leaf];
-
-				writeBit(output, 1 - leaf);
-			}
+		for (int i = codeTable[c].length - 1; i >= 0; --i) {
+			writeBit(output, (unsigned char)((unsigned char)(codeTable[c].chunks[i / 8] << i % 8) >> 7));
 		}
 	}
 
 	static int writeMetadata(FILE* output) {
-		unsigned int metadataSize = 35039;
 		fwrite(&metadataSize, 4, 1, output);
 		fwrite(&symbolCnt, 8, 1, output);
 
@@ -161,28 +187,23 @@ namespace HuffmanOldArchive {
 			writeCodeLength(output, (unsigned char)i);
 			writeCode(output, (unsigned char)i);
 		}
+
+		eprintf("Metadata has been written\n");
 	}
 	 
 	int archive(FILE* input, FILE* output, std::unordered_map<std::string, std::string> arg) {
 		buildHuffmanTree(input);
+		buildCodeTable();
 
-		if (outputTree) {
-			FILE* dn = fopen("/dev/null", "wb");
-			for (int c = 0; c <= 255; c++) {
-				writeCode(dn, c);
-				printf("Length of code for symbol '%d': %d bits\n", c, bitsWritten);
-				bitsWritten = 0;
-			}
-			fclose(dn);
-		}
-		
 		binBuff.buffer = 0;
 		binBuff.ptr = 0;
 
 		writeMetadata(output);
 		eprintf("Metadata bits: %d\n", bitsWritten);
 		bitsWritten = 0;
-	 
+	
+		eprintf("Starting translation...   ");
+
 		unsigned char buff;
 			
 		while (fread(&buff, 1, 1, input)) {
@@ -196,5 +217,7 @@ namespace HuffmanOldArchive {
 		}
 		eprintf("Last bits: %d\n", bitsWritten);
 		bitsWritten = 0;
+
+		eprintf("Done\n");
 	}
 };

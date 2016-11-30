@@ -1,7 +1,7 @@
 #include "tree.h"
 
 #include <initializer_list>
-#include <util.h>
+#include <log.h>
 
 namespace Huffman2 {
 

@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <string>
 
-#include <util.h>
+#include <log.h>
 #include "engines.h"
 
 bool outputTree = false;

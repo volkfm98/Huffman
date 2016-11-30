@@ -1,7 +1,7 @@
 #include "tree.h"
 #include "util.h"
 #include "stats.h"
-#include <util.h>
+#include <log.h>
 
 #include <unordered_map>
 
