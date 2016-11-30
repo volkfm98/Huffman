@@ -7,6 +7,7 @@
 
 namespace Huffman2 {
 	int deflate(FILE *in, FILE *out, std::unordered_map<std::string, std::string> args) {
+		clock_t deflateBegin = clock();
 		std::unordered_map <uint8_t, uint32_t> freq;
 
 		clock_t firstReadBegin = clock();
@@ -21,7 +22,8 @@ namespace Huffman2 {
 			}
 		}
 		fseek(in, 0, SEEK_SET);
-		eprintf("done, spent %lf s\n", (double)(clock() - firstReadBegin) / CLOCKS_PER_SEC);
+		double firstReadSeconds = (double)(clock() - firstReadBegin) / CLOCKS_PER_SEC;
+		eprintf("done, spent %.1lf s, read performance %.1lf MB/s\n", firstReadSeconds, fullBytes / ((1 << 20) * firstReadSeconds));
 
 		std::vector < std::pair<uint8_t, uint32_t> > freqV;
 		for (auto i : freq) {
@@ -33,7 +35,7 @@ namespace Huffman2 {
 		Tree* ht = new Tree();
 		ht->build(freqV);
 		ht->serializeIntoStream(out);
-		eprintf("Done building tree, spent %lf s\n", (double)(clock() - hufBegin) / CLOCKS_PER_SEC);
+		eprintf("Done building tree, spent %.2lf s\n", (double)(clock() - hufBegin) / CLOCKS_PER_SEC);
 
 		fwrite(&fullBytes, sizeof(fullBytes), 1, out);
 
@@ -45,9 +47,12 @@ namespace Huffman2 {
 				ht->writeSymbolToStream((uint8_t) buff[i], out);
 			}
 		}
-		eprintf("done, spent %lf s\n", (double)(clock() - readBegin) / CLOCKS_PER_SEC);
+		eprintf("done, spent %.2lf s\n", (double)(clock() - readBegin) / CLOCKS_PER_SEC);
 
 		finalizeWrite(out);
+
+		double deflateSeconds = (double)(clock() - deflateBegin) / CLOCKS_PER_SEC;
+		eprintf("Deflate done in %.2lf seconds, archiving speed %.1lf MB/s\n", deflateSeconds, fullBytes /((1 << 20) * deflateSeconds));
 
 		return 0;
 	}
