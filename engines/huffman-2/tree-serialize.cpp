@@ -1,6 +1,5 @@
 #include "tree.h"
 
-#include <initializer_list>
 #include <log.h>
 
 namespace Huffman2 {
@@ -8,14 +7,15 @@ namespace Huffman2 {
 	static std::vector <Tree::SerializedNode> sTree;
 	static void serializeNode(Tree::Node* c, int16_t i) {
 		sTree[i].data = c->data;
+		sTree[i].left = sTree[i].right = -1;
 		if (c->left) {
 			sTree.push_back(Tree::SerializedNode());
-			sTree[i].left = (uint16_t) (sTree.size() - 1);
+			sTree[i].left = (int16_t) (sTree.size() - 1);
 			serializeNode(c->left, sTree[i].left);
 		}
 		if (c->right) {
 			sTree.push_back(Tree::SerializedNode());
-			sTree[i].right = (uint16_t) (sTree.size() - 1);
+			sTree[i].right = (int16_t) (sTree.size() - 1);
 			serializeNode(c->right, sTree[i].right);
 		}
 	}

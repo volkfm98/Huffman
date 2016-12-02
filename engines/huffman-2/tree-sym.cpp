@@ -3,7 +3,7 @@
 
 namespace Huffman2 {
 	void Tree::buildSymbolMap(Tree::Node *n, const std::vector<bool> &bits) {
-		if (n->data) {
+		if (n->left == NULL && n->right == NULL) {
 			symbolMap[n->data] = bits;
 		} else {
 			std::vector <bool> bitsCopy = bits;
@@ -23,17 +23,13 @@ namespace Huffman2 {
 	void Tree::writeSymbolToStream(const uint8_t &sym, FILE* fd) {
 		const std::vector <bool> &bits = symbolMap[sym];
 		for (int i = 0; i < bits.size(); i++) {
-			if (bits[i]) {
-				writeBit(fd, 1);
-			} else {
-				writeBit(fd, 0);
-			}
+			writeBit(fd, (uint8_t) bits[i]);
 		}
 	}
 
 	uint8_t Tree::readSymbolFromStream(FILE* fd) {
 		Node *cur = root;
-		while (!cur->data) {
+		while (cur->left != NULL || cur->right != NULL) {
 			uint8_t bit = readBit(fd);
 			if (bit) {
 				cur = cur->right;
