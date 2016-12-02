@@ -9,24 +9,22 @@ Huffman - just some implementations of Huffman coding algorithm and the tool to 
 # Installation <div name="installation"></div>
 1. Install CMake 2.8+
 You can download the package from [this link](https://cmake.org/download/).
+
 2. Clone the code
-```
-$ git clone https://github.com/volkfm98/Huffman
-```
-You can do this using git tool or you can simply download the sources using web-interface of github.
+
+        $ git clone https://github.com/volkfm98/Huffman
+
 3. Build (assuming you are now in repo directory)
-```
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-```
+
+        $ mkdir build
+        $ cd build
+        $ cmake ..
+        $ make
+
 4. The executable is in the build directory
 
 # Usage <div name="usage"></div>
-```
-./huffman [-e|--engine <engine name] [-i|--input <input file>] [-o|--output <output file>] [-v|--verbose]
-```
+        ./huffman [-e|--engine <engine name] [-i|--input <input file>] [-o|--output <output file>] [-v|--verbose]
 
 Currently available engines are:
 * `huffman-old` - [volkfm](https://github.com/volkfm98)'s implementation
