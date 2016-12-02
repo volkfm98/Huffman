@@ -1,12 +1,11 @@
 # Huffman
 Huffman - just some implementations of Huffman coding algorithm and the tool to use these implementations.
 
----
+
 # Navigation
 1. [Installation](#installation)
 2. [Usage](#usage)
 
----
 # Installation <div name="installation"></div>
 1)Install cmake (version 2.8 or above) on your system.
 You can download the package from [this link](https://cmake.org/download/).
@@ -25,5 +24,14 @@ Simply run make in the directory with the makefiles.
 
 5)Profit! Now you have the executable file called "huffman" in this directory
 
----
 # Usage <div name="usage"></div>
+
+```
+./huffman [-e|--engine <engine name] [-i|--input <input file>] [-o|--output <output file>] [-v|--verbose]
+```
+
+Currently available engines are:
+* `huffman-old` - [volkfm](https://github.com/volkfm98)'s implementation
+* `huffman-2` - [ionagamed](https://github.com/ionagamed)'s implementation (may be slower, because of extensive STL usage and explicit tree serialization)
+
+Might have renamed those accordingly, but nah.
