@@ -24,7 +24,7 @@ You can download the package from [this link](https://cmake.org/download/).
 4. The executable is in the build directory
 
 # Usage <div name="usage"></div>
-        ./huffman [-e|--engine <engine name] [-i|--input <input file>] [-o|--output <output file>] [-v|--verbose]
+        ./huffman [-e|--engine <engine name>] [-i|--input <input file>] [-o|--output <output file>] [-v|--verbose]
 
 Currently available engines are:
 * `huffman-old` - [volkfm](https://github.com/volkfm98)'s implementation
