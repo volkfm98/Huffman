@@ -7,23 +7,24 @@ Huffman - just some implementations of Huffman coding algorithm and the tool to 
 2. [Usage](#usage)
 
 # Installation <div name="installation"></div>
-1)Install cmake (version 2.8 or above) on your system.
+1. Install CMake 2.8+
 You can download the package from [this link](https://cmake.org/download/).
 
-2)Clone our source code on your system.
-
+2. Clone the code
+```
+$ git clone https://github.com/volkfm98/Huffman
+```
 You can do this using git tool or you can simply download the sources using web-interface of github.
 
-3)"Cook" the makefiles.
+3. Build (assuming you are now in repo directory)
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+```
 
-Simply run cmake with the path to our sources.
-
-4)Make the code.
-
-Simply run make in the directory with the makefiles.
-
-5)Profit! Now you have the executable file called "huffman" in this directory
-
+4. The executable is in the build directory
 # Usage <div name="usage"></div>
 
 ```
