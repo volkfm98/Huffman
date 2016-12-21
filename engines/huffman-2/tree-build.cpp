@@ -8,7 +8,7 @@ namespace Huffman2 {
 	 */
 	void Tree::build(std::vector < std::pair <uint8_t, uint32_t> > &freq) {
 		std::sort(freq.begin(), freq.end(), [](const std::pair <uint8_t, uint32_t> &a, const std::pair <uint8_t, uint32_t> &b) {
-			return (a.second > b.second);
+			return (a.second < b.second);
 		});
 		std::vector <Node*> tree;
 		tree.resize(freq.size());
