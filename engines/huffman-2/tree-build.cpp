@@ -1,35 +1,32 @@
 #include "tree.h"
 
 #include <algorithm>
+#include <set>
 
 namespace Huffman2 {
 	/**
 	 * The arg is [ ( byte => occurences ) ]
 	 */
 	void Tree::build(std::vector < std::pair <uint8_t, uint32_t> > &freq) {
-		std::sort(freq.begin(), freq.end(), [](const std::pair <uint8_t, uint32_t> &a, const std::pair <uint8_t, uint32_t> &b) {
-			return (a.second < b.second);
-		});
-		std::vector <Node*> tree;
-		tree.resize(freq.size());
+//		std::sort(freq.begin(), freq.end(), [](const std::pair <uint8_t, uint32_t> &a, const std::pair <uint8_t, uint32_t> &b) {
+//			return (a.second < b.second);
+//		});
+		std::set <std::pair<int, Node*>> tree;
 		for (int i = 0; i < freq.size(); i++) {
-			tree[i] = new Node();
-			tree[i]->data = freq[i].first;
+			tree.insert({ freq[i].second, new Node(freq[i].first) });
 		}
 
 		while (tree.size() > 1) {
-			for (int i = 0; i < tree.size(); i += 2) {
-				if (i != tree.size() - 1) {
-					Node* t = new Node();
-					t->left = tree[i];
-					t->right = tree[i + 1];
-					tree[i] = t;
-					tree.erase(tree.begin() + i + 1);
-					i--;
-				}
-			}
+			auto a = *tree.begin();
+			tree.erase(tree.begin());
+			auto b = *tree.begin();
+			tree.erase(tree.begin());
+			Node *t = new Node();
+			t->left = a.second;
+			t->right = b.second;
+			tree.insert({ a.first + b.first, t });
 		}
-		root = tree[0];
+		root = tree.begin()->second;
 		this->buildSymbolMap(this->root, std::vector<bool>());
 	}
 };

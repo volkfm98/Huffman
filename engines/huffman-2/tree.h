@@ -10,8 +10,15 @@ namespace Huffman2 {
 		struct Node {
 			Node *left, *right;
 			uint8_t data;
+			Node() {}
+			Node(uint8_t data) : data(data) {
+				left = right = NULL;
+			}
 			bool isLeaf() {
 				return left == NULL && right == NULL;
+			}
+			bool operator < (const Node &arg) const {
+				return data < arg.data;
 			}
 		};
 		struct SerializedNode {
